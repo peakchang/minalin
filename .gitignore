@@ -22,3 +22,5 @@ vite.config.ts.timestamp-*
 
 static/swiper_img
 static/swiper_detail_img
+
+public/
