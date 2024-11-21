@@ -6,7 +6,7 @@ export const load = async ({ params, url }) => {
     try {
         console.log(back_api);
 
-        const res = await axios.get(`${back_api}/load_main_image_list`);
+        const res = await axios.get(`${back_api}/admin/load_main_image_list`);
         if (res.status == 200) {
             if (res.data.main_image_list.length > 0) {
                 mainImageList = res.data.main_image_list.split(',');

@@ -20,7 +20,7 @@
         const imgArrStr = imgArr.join(",");
 
         try {
-            const res = await axios.post(`${back_api}/update_main_image_list`, {
+            const res = await axios.post(`${back_api}/admin/update_main_image_list`, {
                 imgArrStr,
             });
             console.log(res);

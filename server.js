@@ -8,7 +8,8 @@ const app = express();
 dotenv.config();
 import { handler } from "./_front/build/handler.js"
 import { apiRouter } from "./routes/api.js"
-
+import { adminRouter } from "./routes/admin.js"
+import { mainRouter } from "./routes/main.js"
 // import { admBackLinkRouter } from './routes/adm_backlink.js'
 
 
@@ -54,6 +55,8 @@ app.use('/chk', (req, res) => {
 });
 
 app.use('/api/v3', apiRouter);
+app.use('/api/v3/admin', adminRouter);
+app.use('/api/v3/main', mainRouter);
 
 app.use(handler);
 

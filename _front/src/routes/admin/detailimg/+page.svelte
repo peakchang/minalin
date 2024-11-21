@@ -21,7 +21,7 @@
 
         try {
             const res = await axios.post(
-                `${back_api}/update_detail_image_list`,
+                `${back_api}/admin/update_detail_image_list`,
                 {
                     imgArrStr,
                 },

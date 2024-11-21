@@ -1,41 +1,22 @@
 <script>
     import { browser } from "$app/environment";
-    import { onMount } from "svelte";
     let mainSwiper;
     let swiperContain;
     let swiper2;
     let swiper;
 
-    let loading = true;
+    let { data } = $props();
 
-    $: loading, logLodding();
+    let imgArr = $state(data.mainImageList);
 
-    function logLodding() {
-        console.log(loading);
-    }
-
-    let imgArr = [
-        "img0.jpg",
-        "img1.jpg",
-        "img2.jpg",
-        "img3.jpg",
-        "img4.jpeg",
-        "img5.jpeg",
-        "img6.jpeg",
-        "img7.jpeg",
-        "img8.jpeg",
-        "img9.jpeg",
-        "img10.jpeg",
-    ];
-
-    let detailImgArr = Array.from({ length: 30 }, (_, i) => i);
+    let detailImgArr = $state(data.detailImageList);
 
     let imgHeights = [];
     // let windowHeight = window.innerHeight;
     let windowHeight = 0;
     let wrapperHeights = [];
 
-    onMount(() => {
+    $effect(() => {
         // main init Swiper:
         mainSwiper = new Swiper(".main-swiper", {
             loop: true,
@@ -70,28 +51,7 @@
                 swiper: swiper,
             },
         });
-
-        // const imgs = document.querySelectorAll("img");
-        // console.log(imgs);
-
-        // imgs.forEach((img, index) => {
-        //     img.onload = () => {
-        //         const imgHeight = img.clientHeight;
-        //         console.log(imgHeight);
-
-        //         imgHeights[index] = imgHeight;
-        //         adjustHeight(index, imgHeight);
-        //     };
-        // });
     });
-
-    // function adjustHeight(index, imgHeight) {
-    //     if (browser) {
-    //         windowHeight = window.innerHeight;
-    //         wrapperHeights[index] =
-    //             imgHeight > windowHeight ? "100vh" : `${imgHeight}px`;
-    //     }
-    // }
 </script>
 
 <div class="main-swiper">
@@ -103,7 +63,7 @@
                 class="swiper-slide img_wrapper"
                 style="height: {wrapperHeights[idx] || 'auto'}"
             >
-                <img src="/swiper_img/{img}" alt="" />
+                <img src={img} alt="" />
             </div>
         {/each}
     </div>
@@ -119,7 +79,8 @@
             <div class="swiper-wrapper flex items-center">
                 {#each detailImgArr as detailImg}
                     <div class="swiper-slide">
-                        <img src="/swiper_detail_img/img{detailImg}.jpg" />
+                        <!-- svelte-ignore a11y_missing_attribute -->
+                        <img src={detailImg} />
                     </div>
                 {/each}
             </div>
@@ -130,7 +91,8 @@
             <div class="swiper-wrapper">
                 {#each detailImgArr as detailImg}
                     <div class="swiper-slide">
-                        <img src="/swiper_detail_img/img{detailImg}.jpg" />
+                        <!-- svelte-ignore a11y_missing_attribute -->
+                        <img src={detailImg} />
                     </div>
                 {/each}
             </div>
