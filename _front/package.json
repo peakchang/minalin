@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@fullcalendar/daygrid": "^6.1.15",
+		"@fullcalendar/interaction": "^6.1.15",
 		"axios": "^1.7.7",
 		"browser-image-compression": "^2.0.2",
 		"svelte-fullcalendar": "^3.0.0"

@@ -1,6 +1,8 @@
 <script>
     import FullCalendar from "svelte-fullcalendar";
+    import interactionPlugin from "@fullcalendar/interaction"; // 플러그인 가져오기
     import daygridPlugin from "@fullcalendar/daygrid";
+
     // import ko from '@fullcalendar/core/locales/ko';
     import { browser } from "$app/environment";
     import { onMount } from "svelte";
@@ -13,11 +15,19 @@
         { title: "18:00~23:00 김미영님", date: "2024-11-15" },
     ]);
     let options = {
-        dateClick: (event) => alert("date click! " + event.dateStr),
+        dateClick: function (info) {
+            console.log(info);
+        },
         events: monthEvent,
         initialView: "dayGridMonth",
-        plugins: [daygridPlugin],
+        plugins: [daygridPlugin, interactionPlugin],
         locale: "ko",
+        datesSet: function (info) {
+            console.log("뷰 변경 또는 날짜 범위 업데이트");
+            console.log("현재 뷰:", info.view.type); // 예: "dayGridMonth"
+            console.log("시작 날짜:", info.startStr); // 현재 뷰의 시작 날짜
+            console.log("끝 날짜:", info.endStr); // 현재 뷰의 끝 날짜
+        },
     };
 
     onMount(() => {
@@ -62,16 +72,15 @@
     });
 </script>
 
-<!-- <svelte:window on:load={() => console.log('DOM loaded')}> -->
+
 
 <div class="max-w-[1000px] mx-auto px-2 pt-28">
+    
     <div class="text-center text-lg font-semibold">예약현황 페이지</div>
 
     <div class="text-xs md:text-sm">
         <FullCalendar {options} />
     </div>
 
-    <div class="text-sm">
-        dsfsdf
-    </div>
+    <div class="text-sm">dsfsdf</div>
 </div>

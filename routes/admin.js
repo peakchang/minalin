@@ -3,7 +3,7 @@ import { sql_con } from '../back-lib/db.js'
 
 const adminRouter = express.Router();
 
-
+// 이미지 처리 부분~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 adminRouter.get('/load_detail_image_list', async (req, res, next) => {
     let detail_image_list = [];
     // let detail_image_list = [];

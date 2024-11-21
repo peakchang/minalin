@@ -23,9 +23,10 @@ CREATE TABLE IF NOT EXISTS base_data(
 );
 
 CREATE TABLE IF NOT EXISTS reserve_manage(
-    rm_id INT AUTO_INCREMENT PRIMARY KEY,
-    rm_month VARCHAR(10) NOT NULL,
-    rm_json_data TEXT
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATETIME NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    order INT,
 );
 
 CREATE TABLE IF NOT EXISTS board(
