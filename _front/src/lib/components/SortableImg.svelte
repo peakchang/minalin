@@ -263,6 +263,9 @@
             on:dragover={(event) => handleDragOver(event, index)}
             on:dragleave={(event) => handleDragLeave(event, index)}
             on:drop={(event) => handleDrop(event, index)}
+            on:touchstart="{(event) => handleTouchStart(event, index)}"
+            on:touchmove="{handleTouchMove}"
+            on:touchend="{handleTouchEnd}"
             class={hoveredIndex === index ? "hovered" : ""}
             style="--hover-color: {hoverColor}"
         >
