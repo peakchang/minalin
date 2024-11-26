@@ -24,9 +24,10 @@ CREATE TABLE IF NOT EXISTS base_data(
 
 CREATE TABLE IF NOT EXISTS reserve_manage(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATETIME NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    order INT,
+    date DATE NOT NULL,
+    start_time TIME,
+    end_time TIME,
+    orderer_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS board(
