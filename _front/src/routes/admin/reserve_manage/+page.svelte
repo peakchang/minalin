@@ -17,32 +17,31 @@
     let endTime = $state("00:00");
     let ordererName = $state("");
 
+    // 일자별 오더 리스트
+    let orderDayList = $state([]);
+
     // 일정 추가 element Boolean
     let addSchedule = $state(true);
 
-    let monthEvent = $state([
-        { title: `09:00~12:00 김예지님`, date: "2024-11-30" },
-        { title: `13:00~17:00 강다연님`, date: "2024-11-30" },
-        { title: `19:00~ 오연주님`, date: "2024-11-30" },
-        { title: "23:00~ 김승이님", date: "2024-11-08" },
-        { title: "18:00~23:00 김미영님", date: "2024-11-15" },
-    ]);
-    let options = {
+    // let monthEvent = $state([]);
+    let options = $state({
         dateClick: function (info) {
             date = moment(info.date).format("YYYY-MM-DD");
+            getOrderList(date);
             schedule_modal.showModal();
         },
-        events: monthEvent,
+        eventClick: function (info) {
+            date = moment(info.event.start).format("YYYY-MM-DD");
+            getOrderList(date);
+            schedule_modal.showModal();
+        },
+        events: [],
         initialView: "dayGridMonth",
         plugins: [daygridPlugin, interactionPlugin],
         locale: "ko",
         datesSet: async function (info) {
             const startDate = moment(info.startStr).utc().format("YYYY-MM-DD");
             const endDate = moment(info.endStr).utc().format("YYYY-MM-DD");
-
-            console.log(startDate);
-            console.log(endDate);
-
             try {
                 const res = await axios.post(
                     `${back_api}/admin/load_schedule`,
@@ -53,7 +52,6 @@
                 );
 
                 if (res.status == 200) {
-                    console.log("asdjfalisjdfilajsdf");
                     const scheduleListTemp = res.data.scheduleList;
 
                     try {
@@ -66,19 +64,32 @@
                         );
 
                         if (res.status == 200) {
-                            console.log("asdjfalisjdfilajsdf");
                             const scheduleListTemp = res.data.scheduleList;
-                            console.log(scheduleListTemp);
-
-                            monthEvent = scheduleListTemp.map((item) => {
+                            const monthEvent = scheduleListTemp.map((item) => {
                                 return {
-                                    title: `${item.start_time}~${item.end_time} ${item.orderer_name}님`,
+                                    title: `${item.start_time.slice(0, 5)}~${item.end_time.slice(0, 5)} ${item.orderer_name}님`,
                                     date: moment(item.date).format(
                                         "YYYY-MM-DD",
                                     ), // Moment.js로 날짜 변환
                                 };
                             });
-                            console.log(monthEvent);
+
+                            options = {
+                                ...options,
+                                events: monthEvent,
+                                eventContent: function (info) {
+                                    const titleArr =
+                                        info.event.title.split(" ");
+                                    return {
+                                        html: `<div style="text-align:center;">
+                                            <div>${titleArr[0]}</div>
+                                            <div>${titleArr[1]}</div>
+                                        </div>`,
+                                    };
+                                },
+                            };
+
+                            // reSortElement()
                         }
                     } catch (err) {
                         console.error(err.message);
@@ -91,48 +102,9 @@
             // console.log("시작 날짜:", info.startStr); // 현재 뷰의 시작 날짜
             // console.log("끝 날짜:", info.endStr); // 현재 뷰의 끝 날짜
         },
-    };
-
-    $effect(() => {
-        if (browser) {
-            const eventWrappers = document.querySelectorAll(".fc-sticky");
-
-            eventWrappers.forEach((wrapper) => {
-                // 엘리먼트 내의 텍스트를 가져옵니다.
-                const textContent = wrapper.textContent.trim();
-
-                // 텍스트를 공란 기준으로 나눕니다.
-                const textArray = textContent.split(/\s+/);
-
-                // 배열의 길이가 2 이상인지 확인합니다.
-                if (textArray.length >= 2) {
-                    // 상위 엘리먼트를 가져옵니다.
-                    const parent = wrapper.parentElement;
-
-                    // 기존 엘리먼트를 제거합니다.
-                    parent.removeChild(wrapper);
-
-                    parent.style.textAlign = "center";
-
-                    // 첫 번째와 두 번째 텍스트를 사용하여 새로운 엘리먼트를 생성합니다.
-                    const newWrapper1 = document.createElement("div");
-                    const newWrapper2 = document.createElement("div");
-
-                    // 각각의 새로운 엘리먼트에 텍스트를 추가합니다.
-                    newWrapper1.textContent = textArray[0];
-                    newWrapper2.textContent = textArray[1];
-
-                    // 원한다면 클래스 추가
-                    newWrapper1.classList.add("fc-sticky");
-                    newWrapper2.classList.add("fc-sticky");
-
-                    // 상위 엘리먼트에 새로운 엘리먼트들을 추가합니다.
-                    parent.appendChild(newWrapper1);
-                    parent.appendChild(newWrapper2);
-                }
-            });
-        }
     });
+
+    $effect(() => {});
 
     async function updateReserve() {
         try {
@@ -169,6 +141,36 @@
         const startDate = new Date(`1970-01-01T${startTime}:00`);
         const endDate = new Date(`1970-01-01T${endTime}:00`);
         return startDate < endDate;
+    }
+
+    async function getOrderList(date) {
+        console.log(date);
+
+        try {
+            const res = await axios.post(
+                `${back_api}/admin/get_day_order_list`,
+                {
+                    date,
+                },
+            );
+            console.log(res);
+
+            if (res.status == 200) {
+                orderDayList = res.data.order_list.map((item) => {
+                    console.log(item.id);
+
+                    return {
+                        id: item.id,
+                        startTime: item.start_time.slice(0, 5),
+                        endTime: item.end_time.slice(0, 5),
+                        ordererName: item.orderer_name,
+                        date: moment(item.date).format("YYYY-MM-DD"), // Moment.js로 날짜 변환
+                    };
+                });
+
+                console.log(orderDayList);
+            }
+        } catch (error) {}
     }
 </script>
 
@@ -254,6 +256,58 @@
                             />
                         </td>
                     </tr>
+
+                    {#each orderDayList as dayOrder, idx}
+                        <tr>
+                            <td class="in-td">
+                                <input
+                                    type="date"
+                                    class="border w-full px-1 py-2 rounded-md text-xs"
+                                    bind:value={orderDayList[idx]["date"]}
+                                />
+                            </td>
+                            <td class="in-td">
+                                <select
+                                    id="hours"
+                                    class="border w-full py-2 rounded-md text-xs focus:outline-none focus:border-blue-500"
+                                    bind:value={orderDayList[idx]["startTime"]}
+                                    on:change={timeChange}
+                                >
+                                    {#each Array(24)
+                                        .fill(0)
+                                        .map( (_, i) => String(i).padStart(2, "0"), ) as hour}
+                                        <option value={`${hour}:00`}
+                                            >{hour}:00</option
+                                        >
+                                    {/each}
+                                </select>
+                            </td>
+                            <td class="in-td">
+                                <select
+                                    id="hours"
+                                    class="border w-full py-2 rounded-md text-xs focus:outline-none focus:border-blue-500"
+                                    bind:value={orderDayList[idx]["endTime"]}
+                                    on:change={timeChange}
+                                >
+                                    {#each Array(24)
+                                        .fill(0)
+                                        .map( (_, i) => String(i).padStart(2, "0"), ) as hour}
+                                        <option value={`${hour}:00`}
+                                            >{hour}:00</option
+                                        >
+                                    {/each}
+                                </select>
+                            </td>
+                            <td class="in-td">
+                                <input
+                                    type="text"
+                                    class="input-base text-xs"
+                                    placeholder="성함을 입력하세요"
+                                    bind:value={orderDayList[idx]["ordererName"]}
+                                />
+                            </td>
+                        </tr>
+                    {/each}
                 </tbody>
             </table>
         </div>
@@ -286,3 +340,22 @@
 
     <div class="text-sm">dsfsdf</div>
 </div>
+
+<style>
+    .highlight {
+        background-color: red !important;
+    }
+    .fc-event {
+        background-color: #ff5733 !important; /* 이벤트 배경 색상 변경 */
+        color: #ffffff !important; /* 글자 색상 변경 */
+        border: none !important; /* 테두리 제거 */
+    }
+
+    .fc-daygrid-event {
+        font-size: 14px !important; /* 폰트 크기 변경 */
+    }
+
+    .fc-h-event {
+        border-radius: 8px !important; /* 테두리 둥글게 */
+    }
+</style>

@@ -14,6 +14,18 @@ adminRouter.post('/add_schedule', async (req, res, next) => {
 
 // 일정 불러오기!!
 
+adminRouter.post('/get_day_order_list', async (req, res, next) => {
+    const getDate = req.body.date;
+    let order_list = [];
+    try {
+        const getOrderListQuery = "SELECT * FROM reserve_manage WHERE date = ?";
+        const [orderList] = await sql_con.promise().query(getOrderListQuery, [getDate]);
+        order_list = orderList
+    } catch (error) {
+
+    }
+    res.json({ order_list })
+})
 adminRouter.post('/load_schedule', async (req, res, next) => {
     const body = req.body;
 
