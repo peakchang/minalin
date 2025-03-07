@@ -58,12 +58,8 @@ apiRouter.post('/upload_img', img_upload.single('onimg'), (req, res, next) => {
         var origin = req.get('host');
         baseUrl = req.protocol + '://' + origin + '/' + lastFolder + '/' + req.file.filename;
         saveUrl = req.file.path
-
         console.log(baseUrl);
         console.log(saveUrl);
-
-
-
         console.log(req.file.filename);
 
     } catch (error) {
@@ -85,30 +81,26 @@ function imgFolderChk() {
         fs.mkdirSync(`public`);
     }
 
-    console.log('222222');
     try {
         fs.readdirSync(`public/uploads`);
     } catch (error) {
         fs.mkdirSync(`public/uploads`);
     }
-    console.log('333333');
+
     try {
         fs.readdirSync(`public/uploads/image`);
     } catch (error) {
         fs.mkdirSync(`public/uploads/image`);
     }
-    console.log('444444');
+
     try {
         fs.readdirSync(`public/uploads/image`);
     } catch (error) {
         console.error(error.message);
         fs.mkdirSync(`public/uploads/image`);
     }
-    console.log('555555');
 
     setFolder = `public/uploads/image`
-
-
     return setFolder;
 }
 
